@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String  @id @default(uuid()) @db.Uuid
+  email     String  @unique
+  firstName String?
+  lastName  String?
+  picture   String
+
+  // Relations
+  folders Folder[]
+  files   File[]
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  FolderAccess FolderAccess[]
+}
+
+model Folder {
+  id       String  @id @default(uuid()) @db.Uuid
+  name     String
+  parentId String? @db.Uuid
+  userId   String  @db.Uuid
+
+  // Relations
+  folder  Folder?        @relation("ChildFolders", fields: [parentId], references: [id], onDelete: Cascade)
+  user    User           @relation(fields: [userId], references: [id])
+  folders Folder[]       @relation("ChildFolders")
+  files   File[]
+  access  FolderAccess[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model File {
+  id             String     @id @default(uuid()) @db.Uuid
+  name           String
+  extension      String
+  storedFileName String
+  type           AccessType @default(PUBLIC)
+  folderId       String?    @db.Uuid
+  userId         String     @db.Uuid
+
+  // Relations
+  folder Folder? @relation(fields: [folderId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FolderAccess {
+  id       String @id @default(uuid()) @db.Uuid
+  folderId String @db.Uuid
+  userId   String @db.Uuid
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id])
+}
+
+enum AccessType {
+  PUBLIC
+  PRIVATE
+}
+
