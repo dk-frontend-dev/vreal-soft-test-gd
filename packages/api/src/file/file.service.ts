@@ -11,6 +11,7 @@ import {CreateFileDto} from "@/file/dtos/create-file.dto";
 import {UpdateFileDto} from "@/file/dtos/update-file.dto";
 import {FolderService} from "@/folder/folder.service";
 import {isUUID} from "class-validator";
+import {isGrantedLib} from "@/@helpers/is-granted.helper";
 
 @Injectable()
 export class FileService {
@@ -30,8 +31,7 @@ export class FileService {
         return this.prisma.file.findUnique({where});
     }
 
-    public async create(user: User, payload: CreateFileDto, file: Express.Multer.File): Promise<File> {
-        const folderId = await this.validateParentFolder(payload.folderId, user);
+    public async create(user: User, payload: CreateFileDto, folderId: string, file: Express.Multer.File): Promise<File> {
         const fileData = await this.storeFile(file);
 
         return this.prisma.file.create({
@@ -50,8 +50,7 @@ export class FileService {
         })
     }
 
-    public async update(id: string, payload: UpdateFileDto, file: Express.Multer.File, user: User): Promise<File> {
-        const folderId = await this.validateParentFolder(payload.folderId, user);
+    public async update(id: string, payload: UpdateFileDto, file: Express.Multer.File, folderId: string): Promise<File> {
         const fileExists = await this.findOne({id});
 
         let fileData: StoredFileData | null = null;
@@ -67,7 +66,7 @@ export class FileService {
                 type: payload.type,
                 extension: fileData?.extension ?? fileExists.extension,
                 storedFileName: fileData?.storedFileName ?? fileExists.storedFileName,
-                folder: folderId ? {connect: {id: payload.folderId}} : {disconnect: true}
+                folder: folderId ? {connect: {id: folderId}} : {disconnect: true}
             }
         })
     }
@@ -89,31 +88,5 @@ export class FileService {
         } catch {
             throw new BadRequestException('Error saving file');
         }
-    }
-
-    private async validateParentFolder(folderId: string | null, user: User): Promise<string | null> {
-        if (!folderId) return null;
-
-        if (!isUUID(folderId)) {
-            throw new BadRequestException(`The incorrect folder id`);
-        }
-
-        const folder = await this.folderService.findOne(
-            {id: folderId},
-            {access: true}
-        );
-
-        if (!folder) {
-            throw new BadRequestException(`The folder with id=${folderId} not found`);
-        }
-
-        const isOwner = folder.userId === user.id;
-        const isGranted = folder.access.some(({userId}) => userId === user.id);
-
-        if (isOwner || isGranted) {
-            return folder.id;
-        }
-
-        throw new BadRequestException('Have not permissions for this operation');
     }
 }

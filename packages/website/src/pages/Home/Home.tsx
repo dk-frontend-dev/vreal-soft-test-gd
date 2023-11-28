@@ -1,20 +1,37 @@
+import Folders from "@/widgets/Folders/Folders.tsx";
+import Files from "@/widgets/Files/Files.tsx";
+import {useSearchParams} from "react-router-dom";
+import {useEffect} from "react";
+import {httpClient} from "@/shared/api/httpClient.ts";
 import {useStore} from "@/store/store.ts";
-import {Link} from "react-router-dom";
-import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
+import {AxiosResponse} from "axios";
+import {FolderWithGrantedUsers} from "@/shared/models/folder.model.ts";
 
 function HomePage() {
-    const {bears, addBear} = useStore((state) => state);
+    const {setCurrentFolder} = useStore();
+    const [searchParams] = useSearchParams();
 
-    const clickHandler = () => {
-        addBear();
+    const getFolder = async (id: string) => {
+        const {data}: AxiosResponse<FolderWithGrantedUsers> = await httpClient.get(`folders/${id}`);
+        setCurrentFolder(data);
     }
 
+    useEffect(() => {
+        const currentFolderId = searchParams.get('folderId');
+
+        if (!currentFolderId) {
+            setCurrentFolder(null);
+            return;
+        }
+
+        void getFolder(currentFolderId);
+    }, [searchParams])
+
     return (
-        <>
-            <button onClick={() => clickHandler()}>{bears}</button>
-            <AppButton text={'123'} className={'123'} />
-            <Link to={'login'}>to login</Link>
-        </>
+        <div className={'container'}>
+            <Folders />
+            <Files />
+        </div>
     )
 }
 

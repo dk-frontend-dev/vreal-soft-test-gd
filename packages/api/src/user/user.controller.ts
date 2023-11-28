@@ -1,7 +1,7 @@
-import {Controller, Get, Post, Req, UseGuards} from "@nestjs/common";
+import {Controller, Get, Post, Req, Res, UseGuards} from "@nestjs/common";
 import {AuthGuard} from "@nestjs/passport";
 import {UserService} from "@/user/user.service";
-import {AccessToken, UserResponse} from "@/@models/user.model";
+import {AccessToken} from "@/@models/user.model";
 import {User} from "@prisma/client";
 import {JwtAuthGuard} from "@/@guards/jwt-auth.guard";
 import {CurrentUser} from "@/@decorators/current-user.decorator";
@@ -11,9 +11,19 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @UseGuards(JwtAuthGuard)
+    @Get('users/all')
+    async index(@CurrentUser() user: User): Promise<User[]> {
+        return this.userService.findMany({
+            email: {
+                not: user.email
+            }
+        });
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get('users')
-    async index(): Promise<User[]> {
-        return this.userService.findMany();
+    async findOne(@CurrentUser() user: User): Promise<User> {
+        return user;
     }
 
     @Post('users/refresh')
@@ -29,8 +39,10 @@ export class UserController {
 
     @Get('google/redirect')
     @UseGuards(AuthGuard('google'))
-    googleAuthRedirect(@Req() req): Promise<UserResponse> {
-        return this.userService.signIn(req.user)
+    async googleAuthRedirect(@Req() req, @Res() res): Promise<void> {
+        const user = await this.userService.signIn(req.user);
+
+        res.redirect(`http://localhost:5173/google-oauth-success-redirect/${user.accessToken}`)
     }
 }
 

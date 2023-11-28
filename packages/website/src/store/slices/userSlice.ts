@@ -1,16 +1,31 @@
 import {StateCreator} from "zustand";
+import {User} from '@prisma/client';
 
-export interface BearSlice {
-    bears: number
-    addBear: () => void
+export interface UserSlice {
+    currentUser: User | null;
+    setCurrentUser: (currentUser: User | null) => void;
+    allUsers: User[] | [];
+    setAllUsers: (users: User[]) => void;
 }
 
-export const createBearSlice: StateCreator<
-    BearSlice,
+export const createUserSlice: StateCreator<
+    UserSlice,
     [],
     [],
-    BearSlice
+    UserSlice
 > = (set) => ({
-    bears: 0,
-    addBear: () => set((state: BearSlice) => ({ bears: state.bears + 1 })),
+    currentUser: null,
+    allUsers: [],
+    setCurrentUser: (currentUser: User | null) => set((state: UserSlice) => {
+        return {
+            ...state,
+            currentUser
+        }
+    }),
+    setAllUsers: (allUsers: User[]) => set((state: UserSlice) => {
+        return {
+            ...state,
+            allUsers
+        }
+    }),
 })

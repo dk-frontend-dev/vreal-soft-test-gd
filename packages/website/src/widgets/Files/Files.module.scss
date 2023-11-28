@@ -1,0 +1,7 @@
+@import '@/styles/mixins';
+@import '@/styles/variables';
+
+.files {
+  @include grid(1fr 1fr 1fr 1fr, 30px);
+  align-items: stretch;
+}

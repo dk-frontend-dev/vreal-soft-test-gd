@@ -8,10 +8,6 @@ export class UpdateFileDto {
     name: string;
 
     @IsString()
-    @IsOptional()
-    folderId?: string;
-
-    @IsString()
     @IsEnum(AccessType)
     type: AccessType;
 }

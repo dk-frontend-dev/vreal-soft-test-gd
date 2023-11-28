@@ -1,0 +1,9 @@
+@import '@/styles/mixins';
+
+.section {
+  padding: 30px 0;
+}
+
+.button_container {
+  @include flex(center, center);
+}

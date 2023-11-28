@@ -1,0 +1,10 @@
+@import '@/styles/mixins';
+
+.section {
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-color-1);
+}
+
+.container {
+  @include flex(center, space-between);
+}

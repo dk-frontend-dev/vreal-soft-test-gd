@@ -1,4 +1,4 @@
-import {IsArray, IsNotEmpty, IsOptional, IsString, MaxLength} from "class-validator";
+import {IsArray, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength} from "class-validator";
 
 export class UpdateFolderDto {
     @IsString()
@@ -7,9 +7,10 @@ export class UpdateFolderDto {
     name: string;
 
     @IsString()
+    @IsUUID()
     @IsOptional()
     parentId?: string;
 
     @IsArray()
-    userIds: string[];
+    userEmails: string[];
 }

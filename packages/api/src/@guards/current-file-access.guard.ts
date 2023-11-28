@@ -2,10 +2,10 @@ import {BadRequestException, CanActivate, ExecutionContext, Injectable} from "@n
 import {PrismaService} from "@/@services/prisma/prisma.service";
 import {Observable} from "rxjs";
 import {User} from "@prisma/client";
-import {isUUID} from "class-validator";
+import {isGrantedLib} from "@/@helpers/is-granted.helper";
 
 @Injectable()
-export class FileAccessGuard implements CanActivate {
+export class CurrentFileAccessGuard implements CanActivate {
     constructor(private prisma: PrismaService) {}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
@@ -15,10 +15,6 @@ export class FileAccessGuard implements CanActivate {
     }
 
     private async validate(fileId: string, user: User): Promise<boolean> {
-        if (!fileId || !isUUID(fileId)) {
-            throw new BadRequestException(`The file with id=${fileId} not found`);
-        }
-
         const file = await this.prisma.file.findUnique(
             {
                 where: {id: fileId},
@@ -40,9 +36,6 @@ export class FileAccessGuard implements CanActivate {
             return true;
         }
 
-        const isGranted = file.folder.access.some(({userId}) => userId === user.id);
-        const isOwner = file.userId === user.id;
-
-        return isGranted || isOwner;
+        return isGrantedLib(user, file.userId, file.folder.access);
     }
 }

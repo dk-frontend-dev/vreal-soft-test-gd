@@ -1,0 +1,10 @@
+@import '@/styles/mixins';
+
+.container {
+  @include flex(center, center);
+}
+
+.name {
+  @include text(16px, 700, 24px);
+  margin: 0 10px 0 0;
+}

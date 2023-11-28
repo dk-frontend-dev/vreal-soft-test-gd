@@ -1,4 +1,5 @@
 import {ReactNode} from "react";
+import Header from "@/widgets/Header/Header.tsx";
 
 interface MainLayoutProps {
     children: ReactNode;
@@ -7,7 +8,7 @@ interface MainLayoutProps {
 function MainLayout({children}: MainLayoutProps) {
     return (
         <>
-            Header
+            <Header />
             <main>
                 {children}
             </main>
