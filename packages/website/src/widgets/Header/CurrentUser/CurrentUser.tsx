@@ -11,7 +11,7 @@ interface CurrentUserProps {
 function CurrentUser({user, onLogout}: CurrentUserProps) {
     return (
         <div className={clsx(s.container)}>
-            <p className={clsx(s.name)}>{user.firstName} {user.lastName}</p>
+            <p className={clsx(s.name)}>{user.firstName} {user.lastName} | {user.email}</p>
             <AppButton text={'Logout'} onClick={() => onLogout()} />
         </div>
     )

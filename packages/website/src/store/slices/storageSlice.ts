@@ -8,7 +8,7 @@ export interface StorageSlice {
     folders: FolderWithGrantedUsers[] | null;
     setFiles: (files: File[] | null) => void;
     setFolders: (folders: FolderWithGrantedUsers[] | null) => void;
-    setCurrentFolder: (folder: FolderWithGrantedUsers | null) => void;
+    setCurrentFolder: (currentFolder: FolderWithGrantedUsers | null) => void;
 }
 
 export const createStorageSlice: StateCreator<
@@ -32,10 +32,10 @@ export const createStorageSlice: StateCreator<
             folders
         }
     }),
-    setCurrentFolder: (folder: FolderWithGrantedUsers | null) => set((state) => {
+    setCurrentFolder: (currentFolder: FolderWithGrantedUsers | null) => set((state) => {
         return {
             ...state,
-            folder
+            currentFolder
         }
     }),
 })

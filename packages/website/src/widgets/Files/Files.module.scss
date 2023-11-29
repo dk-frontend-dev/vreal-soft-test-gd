@@ -5,3 +5,7 @@
   @include grid(1fr 1fr 1fr 1fr, 30px);
   align-items: stretch;
 }
+
+.header {
+  @include flex(center, space-between);
+}

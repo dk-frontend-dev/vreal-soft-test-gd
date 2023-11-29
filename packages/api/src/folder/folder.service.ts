@@ -1,5 +1,5 @@
 import {Injectable} from "@nestjs/common";
-import {Folder, Prisma, User} from "@prisma/client";
+import {Folder, FolderAccess, Prisma, User} from "@prisma/client";
 import {PrismaService} from "@/@services/prisma/prisma.service";
 import {CreateFolderDto} from "@/folder/dto/create-folder.dto";
 import {concatPermissions} from "@/@helpers/contact-permissions.helper";
@@ -17,50 +17,18 @@ export class FolderService {
         return this.prisma.folder.findUnique({where, include});
     }
 
-    public async create(user: User, payload: CreateFolderDto): Promise<Folder> {
-        if (!payload.parentId) {
-            return this.prisma.folder.create({
-                data: {
-                    name: payload.name,
-                    user: {
-                        connect: {
-                            id: user.id
-                        }
-                    },
-                    access: {
-                        createMany: {
-                            data: concatPermissions([], payload.userEmails),
-                            skipDuplicates: true
-                        }
-                    }
-                },
-                include: {
-                    access: true
-                }
-            });
-        }
-
-        const { access } = await this.prisma.folder.findUnique({
-            where: {id: payload.parentId},
-            include: {access: true}
-        })
-
+    public async create(user: User, payload: CreateFolderDto, parentFolderAccess: FolderAccess[]): Promise<Folder> {
         return this.prisma.folder.create({
             data: {
-                folder: {
-                    connect: {
-                        id: payload.parentId
-                    }
-                },
+                name: payload.name,
                 user: {
                     connect: {
                         id: user.id
                     }
                 },
-                name: payload.name,
                 access: {
                     createMany: {
-                        data: concatPermissions(access, payload.userEmails),
+                        data: concatPermissions(parentFolderAccess, payload.userEmails, user.email),
                         skipDuplicates: true
                     }
                 }
@@ -68,10 +36,10 @@ export class FolderService {
             include: {
                 access: true
             }
-        })
+        });
     }
 
-    public async update(id: string, payload: CreateFolderDto, parentFolder: FolderWithAccess | null): Promise<any> {
+    public async update(id: string, payload: CreateFolderDto, parentFolder: FolderWithAccess | null, user: User): Promise<any> {
         await this.prisma.folderAccess.deleteMany({
             where: {folderId: id}
         })
@@ -83,7 +51,7 @@ export class FolderService {
                 folder: payload.parentId ? {connect: {id: payload.parentId}} : {disconnect: true},
                 access: {
                     createMany: {
-                        data: concatPermissions(parentFolder?.access, payload.userEmails),
+                        data: concatPermissions(parentFolder?.access, payload.userEmails, user.email),
                         skipDuplicates: true
                     }
                 }

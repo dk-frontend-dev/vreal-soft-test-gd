@@ -27,6 +27,14 @@ function Folders() {
         setFolders(data);
     }
 
+    const onCreateFolder = (response: boolean) => {
+        setIsCreateFolderOpen(false);
+
+        if (response) {
+            void getFolders();
+        }
+    }
+
     useEffect(() => {
         void getFolders();
     }, [searchParams])
@@ -41,14 +49,14 @@ function Folders() {
 
                 <div className={s.folders}>
                     {folders && folders.map(folder => (
-                        <Folder onClick={(folderId) => onFolderClick(folderId)} onFolderDeleted={() => getFolders()} key={folder.id} folder={folder} />
+                        <Folder onClick={(folderId) => onFolderClick(folderId)} onFolderUpdated={() => getFolders()} key={folder.id} folder={folder} />
                     ))}
 
                     {!folders?.length && <Typography variant={'subtitle1'} gutterBottom>No folders</Typography>}
                 </div>
             </section>
 
-            <CreateFolder isOpen={isCreateFolderOpen} closeDialog={setIsCreateFolderOpen} />
+            <CreateFolder isOpen={isCreateFolderOpen} closeDialog={onCreateFolder} />
         </>
     )
 }

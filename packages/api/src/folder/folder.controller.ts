@@ -17,40 +17,66 @@ export class FolderController {
     constructor(private readonly folderService: FolderService) {}
 
     @Get()
-    async index(@Query() query: GetFoldersDto): Promise<Folder[]> {
+    async index(@Query() query: GetFoldersDto, @CurrentUser() user: User): Promise<Folder[]> {
         return this.folderService.findMany({
-            parentId: query.parentId
-        }, {
-            access: true
-        });
-    }
-
-    @Get('all')
-    async getAll(): Promise<Folder[]> {
-        return this.folderService.findMany()
+            parentId: query.parentId,
+            OR: [
+                {
+                    access: {
+                        some: {
+                            userEmail: user.email
+                        }
+                    }
+                },
+                {
+                    userId: user.id
+                }
+            ]
+        }, {access: true});
     }
 
     @Get(':id')
-    async findOne(@Param() query: GetFolderDto): Promise<Folder> {
-        return this.folderService.findOne({id: query.id}, {access: true});
+    async findOne(@Param() query: GetFolderDto, @CurrentUser() user: User): Promise<Folder> {
+        return this.folderService.findOne(
+            {
+                id: query.id,
+                OR: [
+                    {
+                        access: {
+                            some: {
+                                userEmail: user.email
+                            }
+                        }
+                    },
+                    {
+                        userId: user.id
+                    }
+                ]
+            }, {access: true});
     }
 
     @UseGuards(ParentFolderAccessGuard)
     @Post()
     async create(@Body() payload: CreateFolderDto, @CurrentUser() user: User): Promise<Folder> {
-        return this.folderService.create(user, payload);
+        if (!payload.parentId) {
+            return this.folderService.create(user, payload, [])
+        }
+
+        const { access } = await this.folderService.findOne({id: payload.parentId}, {access: true})
+
+        return this.folderService.create(user, payload, access);
     }
 
     @UseGuards(ParentFolderAccessGuard, CurrentFolderAccessGuard)
     @Put(':id')
-    async update(@Param() params: FolderParamsDto, @Body() payload: UpdateFolderDto): Promise<Folder> {
+    async update(@Param() params: FolderParamsDto, @Body() payload: UpdateFolderDto, @CurrentUser() user: User): Promise<Folder> {
         let parentFolder = null;
 
         if (payload.parentId) {
             parentFolder = await this.folderService.findOne({id: payload.parentId}, {access: true})
         }
 
-        return this.folderService.update(params.id, payload, parentFolder);
+        return this.folderService.update(params.id, payload, parentFolder, user);
     }
 
     @UseGuards(CurrentFolderAccessGuard)

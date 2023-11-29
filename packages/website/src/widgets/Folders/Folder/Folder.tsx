@@ -1,31 +1,40 @@
 import FolderIcon from '@mui/icons-material/Folder';
 import s from './Folder.module.scss';
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
-import {isGrantedLib} from "@/shared/lib/isGruntedLib.ts";
-import {useStore} from "@/store/store.ts";
-import {FolderWithGrantedUsers} from "@/shared/models/folder.model.ts";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {httpClient} from "@/shared/api/httpClient.ts";
 import AppDeleteDialog from "@/shared/ui/AppDeleteDialog/AppDeleteDialog.tsx";
+import EditFolder from "@/widgets/Folders/EditFolder/EditFolder.tsx";
+import {FolderWithGrantedUsers, UpdateFolderPayload} from "@/shared/models/folder.model.ts";
+import {useStore} from "@/store/store.ts";
+import AppAuthor from "@/shared/ui/AppAuthor/AppAuthor.tsx";
 
 interface FolderProps {
     folder: FolderWithGrantedUsers;
     onClick: (folderId: string) => void;
-    onFolderDeleted: () => void;
+    onFolderUpdated: () => void;
 }
 
-function Folder({folder, onClick, onFolderDeleted}: FolderProps) {
-    const [isGranted, setIsGranted] = useState(false);
+function Folder({folder, onClick, onFolderUpdated}: FolderProps) {
+    const {allUsers, currentUser} = useStore();
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const {currentUser} = useStore();
 
     const deleteFolder = async (folderId: string) => {
         setIsLoading(true);
         await httpClient.delete(`folders/${folderId}`);
         setIsLoading(false);
-        onFolderDeleted();
+        onFolderUpdated();
     }
+
+    const editFolder = async (folderId: string, payload: UpdateFolderPayload) => {
+        setIsLoading(true);
+        await httpClient.put(`folders/${folderId}`, payload);
+        setIsLoading(false);
+        onFolderUpdated();
+    }
+
     const closeDeleteDialog = async (response: boolean) => {
         if (!response) {
             return setIsDeleteOpen(false);
@@ -35,10 +44,14 @@ function Folder({folder, onClick, onFolderDeleted}: FolderProps) {
         setIsDeleteOpen(false);
     }
 
-    useEffect(() => {
-        const isHavePermissions = isGrantedLib(currentUser!.id, folder.userId, folder.access);
-        setIsGranted(isHavePermissions);
-    }, [currentUser])
+    const closeEditDialog = async (payload?: UpdateFolderPayload) => {
+        if (!payload) {
+            return setIsEditOpen(false);
+        }
+
+        await editFolder(folder.id, payload);
+        setIsEditOpen(false);
+    }
 
 
     return (
@@ -47,10 +60,12 @@ function Folder({folder, onClick, onFolderDeleted}: FolderProps) {
                 <div>
                     <FolderIcon />
                     <p className={s.title}>{folder.name}</p>
+                    <AppAuthor currentUserEmail={currentUser?.email} allUsers={allUsers} userId={folder.userId} />
                 </div>
 
                 <div className={s.actions}>
-                    <AppButton disabled={!isGranted} text={'Delete'} variant="outlined" color="error" onClick={() => setIsDeleteOpen(true)} />
+                    <AppButton text={'Delete'} variant="outlined" color="error" onClick={() => setIsDeleteOpen(true)} />
+                    <AppButton text={'Edit'} variant="outlined" color="primary" onClick={() => setIsEditOpen(true)} />
                     <AppButton text={'Open'} onClick={() => onClick(folder.id)} />
                 </div>
             </div>
@@ -62,6 +77,8 @@ function Folder({folder, onClick, onFolderDeleted}: FolderProps) {
                 title={'Are you sure that you want to delete folder?'}
                 text={'If you delete a folder, all of its contents will be deleted as well'}
             />
+
+            <EditFolder isOpen={isEditOpen} closeDialog={closeEditDialog} isLoading={isLoading} selectedFolder={folder} />
         </>
     )
 }

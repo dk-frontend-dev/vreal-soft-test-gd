@@ -32,21 +32,25 @@ export class FileController {
             folderId: query.folderId ?? null,
             OR: [
                 {type: AccessType.PUBLIC},
+                {
+                    folder: {
+                        OR: [
+                            {
+                                access: {
+                                    some: {
+                                        userEmail: user.email
+                                    }
+                                }
+                            },
+                            {
+                                userId: user.id
+                            }
+                        ]
+                    }
+                },
                 {userId: user.id}
             ]
         });
-    }
-
-    @Get('all')
-    async getAll(@CurrentUser() user: User): Promise<File[]> {
-        return this.fileService.findMany(
-            {
-                OR: [
-                    {type: AccessType.PUBLIC},
-                    {userId: user.id}
-                ]
-            }
-        )
     }
 
     @UseGuards(CurrentFileAccessGuard)

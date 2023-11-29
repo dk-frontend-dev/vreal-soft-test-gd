@@ -1,42 +1,26 @@
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle, InputLabel,
-    TextField
-} from "@mui/material";
-import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
-import {Controller, FieldValues, useForm} from "react-hook-form";
-import AppMultiSelect from "@/shared/ui/AppMultiSelect/AppMultiSelect.tsx";
-import {useStore} from "@/store/store.ts";
+import {Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, TextField} from "@mui/material";
+import {Controller, useForm} from "react-hook-form";
 import {validationErrors} from "@/shared/constants/validationErrors.ts";
-import {httpClient} from "@/shared/api/httpClient.ts";
-import {useState} from "react";
 import {filterGrantedUsersLib} from "@/shared/lib/filterGrantedUsersLib.ts";
+import AppMultiSelect from "@/shared/ui/AppMultiSelect/AppMultiSelect.tsx";
+import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
+import {useStore} from "@/store/store.ts";
+import {FolderWithGrantedUsers, UpdateFolderPayload} from "@/shared/models/folder.model.ts";
 
-interface CreateFolderProps {
+interface EditFolderProps {
     isOpen: boolean;
     onClose?: () => void;
-    closeDialog: (response: boolean) => void;
+    closeDialog: (response?: UpdateFolderPayload) => Promise<void>;
+    isLoading: boolean;
+    selectedFolder: FolderWithGrantedUsers;
 }
 
-function CreateFolder({isOpen, closeDialog, onClose}: CreateFolderProps) {
-    const [isLoading, setIsLoading] = useState<boolean>();
-    const {allUsers, currentFolder, currentUser} = useStore();
-    const {control, handleSubmit, reset} = useForm();
+function EditFolder({isOpen, onClose, closeDialog, isLoading, selectedFolder}: EditFolderProps) {
+    const {allUsers, currentUser} = useStore();
+    const {control, handleSubmit} = useForm();
 
-    const createFolder = async (payload: FieldValues) => {
-        setIsLoading(true);
-
-        await httpClient.post('folders', {
-            name: payload.name,
-            parentId: currentFolder?.id,
-            userEmails: payload.userEmails
-        })
-
-        reset();
-        setIsLoading(false);
-        closeDialog(true);
+    const updateFolder = async (payload: any) => {
+        closeDialog(payload);
     }
 
     return (
@@ -45,16 +29,16 @@ function CreateFolder({isOpen, closeDialog, onClose}: CreateFolderProps) {
             onClose={onClose}
         >
             <DialogTitle id="alert-dialog-title">
-                Create Folder
+                Edit Folder
             </DialogTitle>
             <DialogContent>
-                <form onSubmit={handleSubmit(createFolder)} id={'create-folder'}>
+                <form onSubmit={handleSubmit(updateFolder)} id={'update-folder'}>
                     <InputLabel>Folder Name</InputLabel>
 
                     <Controller
                         control={control}
                         name={'name'}
-                        defaultValue=''
+                        defaultValue={selectedFolder.name}
                         rules={{required: validationErrors.required, max: {value: 100, message: validationErrors.maxLength}}}
                         render={({field, fieldState: {error}}) => (
                             <>
@@ -75,7 +59,7 @@ function CreateFolder({isOpen, closeDialog, onClose}: CreateFolderProps) {
                     <Controller
                         control={control}
                         name={'userEmails'}
-                        defaultValue={filterGrantedUsersLib(currentFolder?.access, currentUser?.email)}
+                        defaultValue={filterGrantedUsersLib(selectedFolder?.access, currentUser?.email)}
                         render={({field}) => (
                             <AppMultiSelect sx={{width: '100%'}} valueKey={'email'} field={field} label={'Granted users'} options={allUsers} />
                         )}
@@ -84,11 +68,11 @@ function CreateFolder({isOpen, closeDialog, onClose}: CreateFolderProps) {
                 </form>
             </DialogContent>
             <DialogActions>
-                <AppButton disabled={isLoading} text={'Close'} onClick={() => closeDialog(false)} variant="outlined" />
-                <AppButton disabled={isLoading} type={'submit'} text={'Create'} form={'create-folder'} variant="contained" color="success" autoFocus />
+                <AppButton disabled={isLoading} text={'Close'} onClick={() => closeDialog()} variant="outlined" />
+                <AppButton disabled={isLoading} type={'submit'} text={'Update'} form={'update-folder'} variant="contained" color="success" autoFocus />
             </DialogActions>
         </Dialog>
     )
 }
 
-export default CreateFolder;
+export default EditFolder;
