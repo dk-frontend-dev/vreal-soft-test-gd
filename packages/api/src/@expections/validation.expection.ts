@@ -1,15 +1,15 @@
-import { BadRequestException, HttpStatus } from '@nestjs/common';
+import {BadRequestException, HttpStatus} from '@nestjs/common';
 
 export interface ValidationTypeError {
-    type: string;
-    text: string[];
+  type: string;
+  text: string[];
 }
 
 export class ValidationException extends BadRequestException {
-    constructor(public ValidationErrors: ValidationTypeError[]) {
-        super({
-            statusCode: HttpStatus.BAD_REQUEST,
-            messages: ValidationErrors,
-        });
-    }
+  constructor(public ValidationErrors: ValidationTypeError[]) {
+    super({
+      statusCode: HttpStatus.BAD_REQUEST,
+      messages: ValidationErrors
+    });
+  }
 }

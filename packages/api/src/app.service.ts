@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 
 @Injectable()
 export class AppService {
-  public healthCheck(): { status: number } {
+  public healthCheck(): {status: number} {
     return {
-      status: 0,
+      status: 0
     };
   }
 }

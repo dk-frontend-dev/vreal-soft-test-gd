@@ -1,4 +1,4 @@
 export interface StoredFileData {
-    storedFileName: string;
-    extension: string;
+  storedFileName: string;
+  extension: string;
 }

@@ -1,9 +1,8 @@
-
-import {IsOptional, IsString, IsUUID} from "class-validator";
+import {IsOptional, IsString, IsUUID} from 'class-validator';
 
 export class GetFilesDto {
-    @IsString()
-    @IsUUID()
-    @IsOptional()
-    folderId?: string;
+  @IsString()
+  @IsUUID()
+  @IsOptional()
+  folderId?: string;
 }

@@ -1,5 +1,3 @@
-function ViewFile() {
-
-}
+function ViewFile() {}
 
 export default ViewFile;

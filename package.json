@@ -7,7 +7,9 @@
   "scripts": {
     "database": "docker-compose -f docker-compose.dev.yml up",
     "api": "lerna run start:dev --scope @vreal-soft-test/api --stream",
-    "website": "lerna run dev --scope @vreal-soft-test/website --stream"
+    "website": "lerna run dev --scope @vreal-soft-test/website --stream",
+    "format:website": "npx prettier --config packages/website/.prettierrc --write 'packages/website/**/*.{js,jsx,ts,tsx,html,css,scss}'",
+    "format:api": "npx prettier --config packages/api/.prettierrc --write 'packages/api/**/*.{js,jsx,ts,tsx,html,css,scss}'"
   },
   "dependencies": {},
   "devDependencies": {

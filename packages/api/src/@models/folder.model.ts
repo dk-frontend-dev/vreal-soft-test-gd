@@ -1,5 +1,5 @@
-import {Folder, FolderAccess} from "@prisma/client";
+import {Folder, FolderAccess} from '@prisma/client';
 
 export interface FolderWithAccess extends Folder {
-    access: FolderAccess[];
+  access: FolderAccess[];
 }

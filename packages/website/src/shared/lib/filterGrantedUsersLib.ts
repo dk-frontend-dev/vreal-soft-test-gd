@@ -1,9 +1,9 @@
-import {FolderAccess} from "@prisma/client";
+import {FolderAccess} from '@prisma/client';
 
 export const filterGrantedUsersLib = (grantedUsers?: FolderAccess[], currentUserEmail?: string) => {
-    if (!grantedUsers || !currentUserEmail) return [];
+  if (!grantedUsers || !currentUserEmail) return [];
 
-    const result = grantedUsers?.filter(({userEmail}) => userEmail !== currentUserEmail);
+  const result = grantedUsers?.filter(({userEmail}) => userEmail !== currentUserEmail);
 
-    return result.map(({userEmail}) => userEmail);
-}
+  return result.map(({userEmail}) => userEmail);
+};

@@ -1,16 +1,16 @@
-import {Folder, FolderAccess} from "@prisma/client";
+import {Folder, FolderAccess} from '@prisma/client';
 
 export interface FolderWithGrantedUsers extends Folder {
-    access: FolderAccess[];
+  access: FolderAccess[];
 }
 
 export interface UpdateFolderPayload {
-    name: string;
-    userEmails: string[];
-    parentId: string | null;
+  name: string;
+  userEmails: string[];
+  parentId: string | null;
 }
 
 export interface CreateFolderPayload {
-    name: string;
-    userEmails: string[];
+  name: string;
+  userEmails: string[];
 }

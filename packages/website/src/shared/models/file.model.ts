@@ -1,15 +1,14 @@
-import {AccessType} from "@prisma/client";
-
+import {AccessType} from '@prisma/client';
 
 export interface EditFilePayload {
-    name: string;
-    type: AccessType;
-    file: File[];
-    folderId: string;
+  name: string;
+  type: AccessType;
+  file: File[];
+  folderId: string;
 }
 
 export interface CreateFilePayload {
-    name: string;
-    type: AccessType;
-    file: File[];
+  name: string;
+  type: AccessType;
+  file: File[];
 }

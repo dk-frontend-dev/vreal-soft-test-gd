@@ -1,10 +1,10 @@
-@import "@/styles/variables";
-@import "@/styles/mixins";
+@import '@/styles/variables';
+@import '@/styles/mixins';
 
 .container {
   padding: 10px 5px 5px;
   border: 1px solid $border-color-1;
-  transition: .2s ease-in border-color;
+  transition: 0.2s ease-in border-color;
   border-radius: $main-border-radius;
 
   &.active {
