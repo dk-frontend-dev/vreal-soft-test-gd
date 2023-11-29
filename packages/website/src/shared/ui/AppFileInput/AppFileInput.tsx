@@ -17,7 +17,8 @@ interface AppFileInputProps {
 const defaultFileTypes = {
   [FileMimeTypes.SVG]: ['.svg'],
   [FileMimeTypes.PNG]: ['.png'],
-  [FileMimeTypes.JPG]: ['.jpg']
+  [FileMimeTypes.JPG]: ['.jpg'],
+  [FileMimeTypes.MP4]: ['.mp4'],
 };
 
 function AppFileInput({onDrop, fieldState, onChange, onBlur, filename, acceptedFileTypes = defaultFileTypes}: AppFileInputProps) {
