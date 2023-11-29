@@ -1,9 +1,22 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors
+} from '@nestjs/common';
 import {FileService} from '@/file/file.service';
 import {AccessType, File, User} from '@prisma/client';
 import {FileInterceptor} from '@nestjs/platform-express';
 import {CustomParseFilePipe} from '@/@pipes/file.pipe';
-import {ALLOWED_FILE_TYPES, ONE_MB} from '@/@constants/file.constant';
+import {ALLOWED_FILE_TYPES, filesDir, ONE_MB} from '@/@constants/file.constant';
 import {CreateFileDto} from '@/file/dtos/create-file.dto';
 import {UpdateFileDto} from '@/file/dtos/update-file.dto';
 import {JwtAuthGuard} from '@/@guards/jwt-auth.guard';
@@ -13,12 +26,13 @@ import {GetFilesDto} from '@/file/dtos/get-files.dto';
 import {FileQueryDto} from '@/file/dtos/file-query.dto';
 import {ParentFolderFileAccessGuard} from '@/@guards/parent-folder-file-access.guard';
 import {FileParamsDto} from '@/file/dtos/file-params.dto';
+import {join} from "path";
 
-@UseGuards(JwtAuthGuard)
 @Controller('files')
 export class FileController {
   constructor(private fileService: FileService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async index(@CurrentUser() user: User, @Query() query: GetFilesDto): Promise<File[]> {
     return this.fileService.findMany({
@@ -46,13 +60,18 @@ export class FileController {
     });
   }
 
-  @UseGuards(CurrentFileAccessGuard)
+  @Get('file/:filename')
+  async sendFile(@Param('filename') filename: string, @Res() res) {
+    return res.sendFile(join(filesDir, `${filename}`))
+  }
+
+  @UseGuards(JwtAuthGuard, CurrentFileAccessGuard)
   @Delete(':id')
   async delete(@Param() params: FileParamsDto): Promise<void> {
     return this.fileService.delete(params.id);
   }
 
-  @UseGuards(ParentFolderFileAccessGuard)
+  @UseGuards(JwtAuthGuard, ParentFolderFileAccessGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(
@@ -71,7 +90,7 @@ export class FileController {
     return this.fileService.create(user, payload, query.folderId, file);
   }
 
-  @UseGuards(ParentFolderFileAccessGuard, CurrentFileAccessGuard)
+  @UseGuards(JwtAuthGuard, ParentFolderFileAccessGuard, CurrentFileAccessGuard)
   @Put(':id')
   @UseInterceptors(FileInterceptor('file'))
   async update(

@@ -21,7 +21,7 @@ import {JwtAuthGuard} from '@/@guards/jwt-auth.guard';
       global: true,
       secret: process.env.JWT_SECRET_KEY,
       signOptions: {expiresIn: '8h'}
-    })
+    }),
   ],
   controllers: [AppController],
   providers: [AppService, GoogleStrategy, JwtStrategy, JwtService, JwtAuthGuard]

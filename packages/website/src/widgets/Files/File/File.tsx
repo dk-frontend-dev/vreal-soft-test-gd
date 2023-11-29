@@ -8,6 +8,7 @@ import AppAuthor from '@/shared/ui/AppAuthor/AppAuthor.tsx';
 import {useStore} from '@/store/store.ts';
 import EditFile from '@/widgets/Files/EditFile/EditFile.tsx';
 import {deleteFileApi} from '@/shared/api/fileAPI.ts';
+import ViewFile from "@/widgets/Files/ViewFile/ViewFile.tsx";
 
 interface FileProps {
   file: IFile;
@@ -18,6 +19,7 @@ function File({file, onFileUpdated}: FileProps) {
   const {allUsers, currentUser} = useStore();
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
+  const [isViewFileOpen, setIsViewFileOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const filename = `${file.name}${file.extension}`;
 
@@ -56,7 +58,7 @@ function File({file, onFileUpdated}: FileProps) {
         <div className={s.actions}>
           <AppButton text={'Delete'} variant="outlined" color="error" onClick={() => setIsDeleteOpen(true)} />
           <AppButton text={'Update'} variant="outlined" color="primary" onClick={() => setIsEditOpen(true)} />
-          <AppButton text={'View'} />
+          <AppButton text={'View'} onClick={() => setIsViewFileOpen(true)} />
         </div>
       </div>
 
@@ -69,6 +71,8 @@ function File({file, onFileUpdated}: FileProps) {
       />
 
       <EditFile isOpen={isEditOpen} closeDialog={closeEditDialog} file={file} />
+
+      <ViewFile file={file} isOpen={isViewFileOpen} closeDialog={setIsViewFileOpen} />
     </>
   );
 }

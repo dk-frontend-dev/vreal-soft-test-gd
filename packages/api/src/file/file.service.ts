@@ -5,18 +5,16 @@ import {File} from '@prisma/client';
 import * as fs from 'fs';
 import {v4 as uuid} from 'uuid';
 import * as path from 'path';
-import {join} from 'path';
 import {StoredFileData} from '@/@models/file.model';
 import {CreateFileDto} from '@/file/dtos/create-file.dto';
 import {UpdateFileDto} from '@/file/dtos/update-file.dto';
+import {filesDir} from "@/@constants/file.constant";
 
 @Injectable()
 export class FileService {
-  private readonly uploadDir = join(__dirname, '..', 'public');
-
   constructor(private prisma: PrismaService) {
-    if (!fs.existsSync(this.uploadDir)) {
-      fs.mkdirSync(this.uploadDir);
+    if (!fs.existsSync(filesDir)) {
+      fs.mkdirSync(filesDir);
     }
   }
 
@@ -78,7 +76,7 @@ export class FileService {
     try {
       const extension = path.extname(file.originalname);
       const fileName = `${uuid()}${extension}`;
-      const filePath = path.join(this.uploadDir, fileName);
+      const filePath = path.join(filesDir, fileName);
 
       fs.writeFileSync(filePath, file.buffer);
       return {storedFileName: fileName, extension};
