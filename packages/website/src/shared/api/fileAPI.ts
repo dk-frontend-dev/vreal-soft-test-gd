@@ -4,9 +4,13 @@ import {File} from '@prisma/client';
 import {CreateFilePayload, EditFilePayload} from '@/shared/models/file.model.ts';
 import {rootFolderIdLib} from '@/shared/lib/rootFolderIdLib.ts';
 
-export const getFilesApi = (folderId: string | null): Promise<AxiosResponse<File[]>> => {
+export const getFilesApi = (folderId?: string | null): Promise<AxiosResponse<File[]>> => {
   return httpClient.get('files', {params: {folderId}});
 };
+
+export const getAllFilesApi = (search: string): Promise<AxiosResponse<File[]>> => {
+  return httpClient.get('files/all', {params: {name: search}})
+}
 
 export const deleteFileApi = (fileId: string): Promise<AxiosResponse<void>> => {
   return httpClient.delete(`files/${fileId}`);

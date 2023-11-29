@@ -1,0 +1,8 @@
+@import '@/styles/variables';
+@import '@/styles/mixins';
+
+.container {
+  padding: 10px;
+  @include flex(flex-start, flex-start);
+  gap: 0 15px;
+}

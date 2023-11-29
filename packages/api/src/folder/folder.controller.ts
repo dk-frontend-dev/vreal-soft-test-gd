@@ -39,8 +39,11 @@ export class FolderController {
   }
 
   @Get('all')
-  async findAll(@CurrentUser() user: User): Promise<Folder[]> {
+  async findAll(@Query() query, @CurrentUser() user: User): Promise<Folder[]> {
     return this.folderService.findMany({
+      name: {
+        contains: query.name,
+      },
       OR: [
         {
           userId: user.id

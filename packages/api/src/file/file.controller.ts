@@ -60,6 +60,36 @@ export class FileController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('all')
+  async findMany(@CurrentUser() user: User, @Query() query) {
+    return this.fileService.findMany({
+      name: {
+        contains: query.name,
+      },
+      OR: [
+        {type: AccessType.PUBLIC},
+        {
+          folder: {
+            OR: [
+              {
+                access: {
+                  some: {
+                    userEmail: user.email
+                  }
+                }
+              },
+              {
+                userId: user.id
+              }
+            ]
+          }
+        },
+        {userId: user.id}
+      ]
+    })
+  }
+
   @Get('file/:filename')
   async sendFile(@Param('filename') filename: string, @Res() res) {
     return res.sendFile(join(filesDir, `${filename}`))
