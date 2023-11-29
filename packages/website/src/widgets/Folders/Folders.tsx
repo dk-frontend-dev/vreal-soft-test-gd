@@ -2,29 +2,34 @@ import {Typography} from "@mui/material";
 import s from './Folders.module.scss';
 import {useEffect, useState} from "react";
 import {httpClient} from "@/shared/api/httpClient.ts";
-import {AxiosResponse} from "axios";
 import {useStore} from "@/store/store.ts";
 import Folder from "@/widgets/Folders/Folder/Folder.tsx";
 import {useSearchParams} from "react-router-dom";
-import {FolderWithGrantedUsers} from "@/shared/models/folder.model.ts";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import CreateFolder from "@/widgets/Folders/CreateFolder/CreateFolder.tsx";
 
 function Folders() {
     const [isCreateFolderOpen, setIsCreateFolderOpen] = useState<boolean>(false);
     const [searchParams, setSearchParams] = useSearchParams();
-    const {folders, setFolders} = useStore();
+    const {folders, setFolders, setAllFolders} = useStore();
 
     const onFolderClick = (folderId: string) => {
         setSearchParams({folderId});
     }
 
     const getFolders = async () => {
-        const {data}: AxiosResponse<FolderWithGrantedUsers[]> = await httpClient.get(
-            'folders',
-            {params: {parentId: searchParams.get('folderId')}}
-        );
-        setFolders(data);
+        const requests$ = [
+            httpClient.get('folders/all'),
+            httpClient.get(
+                'folders',
+                {params: {parentId: searchParams.get('folderId')}}
+            )
+        ]
+
+        const [{data: allFolders}, {data: folders}] = await Promise.all(requests$);
+
+        setAllFolders(allFolders);
+        setFolders(folders);
     }
 
     const onCreateFolder = (response: boolean) => {

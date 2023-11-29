@@ -1,4 +1,4 @@
-import {Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, TextField} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, InputLabel, MenuItem, TextField} from "@mui/material";
 import {Controller, useForm} from "react-hook-form";
 import {validationErrors} from "@/shared/constants/validationErrors.ts";
 import {filterGrantedUsersLib} from "@/shared/lib/filterGrantedUsersLib.ts";
@@ -6,21 +6,36 @@ import AppMultiSelect from "@/shared/ui/AppMultiSelect/AppMultiSelect.tsx";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import {useStore} from "@/store/store.ts";
 import {FolderWithGrantedUsers, UpdateFolderPayload} from "@/shared/models/folder.model.ts";
+import {ROOT_FOLDER_ID} from "@/shared/constants/commonConstants.ts";
+import AppSelect from "@/shared/ui/AppSelect/AppSelect.tsx";
+import {useMemo, useState} from "react";
+import {httpClient} from "@/shared/api/httpClient.ts";
+import {rootFolderIdLib} from "@/shared/lib/rootFolderIdLib.ts";
 
 interface EditFolderProps {
     isOpen: boolean;
     onClose?: () => void;
-    closeDialog: (response?: UpdateFolderPayload) => Promise<void>;
-    isLoading: boolean;
+    closeDialog: (response: boolean) => void;
     selectedFolder: FolderWithGrantedUsers;
 }
 
-function EditFolder({isOpen, onClose, closeDialog, isLoading, selectedFolder}: EditFolderProps) {
-    const {allUsers, currentUser} = useStore();
-    const {control, handleSubmit} = useForm();
+function EditFolder({isOpen, onClose, closeDialog, selectedFolder}: EditFolderProps) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const {allUsers, currentUser, allFolders} = useStore();
+    const {control, handleSubmit} = useForm<UpdateFolderPayload>();
 
-    const updateFolder = async (payload: any) => {
-        closeDialog(payload);
+    const allFoldersWithoutCurrent = useMemo(() => {
+        return allFolders?.filter(folder => folder.id !== selectedFolder.id);
+    }, [allFolders, selectedFolder]);
+
+    const updateFolder = async (payload: UpdateFolderPayload) => {
+        setIsLoading(true);
+
+        const data = {...payload, parentId: rootFolderIdLib(payload.parentId)}
+        await httpClient.put(`folders/${selectedFolder.id}`, data)
+
+        closeDialog(true);
+        setIsLoading(false);
     }
 
     return (
@@ -65,10 +80,26 @@ function EditFolder({isOpen, onClose, closeDialog, isLoading, selectedFolder}: E
                         )}
                     ></Controller>
                     <small>*Granted users will be inherited from the parent</small>
+
+                    <InputLabel>Parent folder</InputLabel>
+
+                    <Controller
+                        control={control}
+                        name={'parentId'}
+                        defaultValue={selectedFolder.parentId ?? ROOT_FOLDER_ID}
+                        render={({field}) => (
+                            <AppSelect field={field}>
+                                <MenuItem value={ROOT_FOLDER_ID}>Root</MenuItem>
+                                {allFoldersWithoutCurrent?.map((folder, index) => (
+                                    <MenuItem key={index} value={folder.id}>{folder.name}</MenuItem>
+                                ))}
+                            </AppSelect>
+                        )}
+                    ></Controller>
                 </form>
             </DialogContent>
             <DialogActions>
-                <AppButton disabled={isLoading} text={'Close'} onClick={() => closeDialog()} variant="outlined" />
+                <AppButton disabled={isLoading} text={'Close'} onClick={() => closeDialog(false)} variant="outlined" />
                 <AppButton disabled={isLoading} type={'submit'} text={'Update'} form={'update-folder'} variant="contained" color="success" autoFocus />
             </DialogActions>
         </Dialog>

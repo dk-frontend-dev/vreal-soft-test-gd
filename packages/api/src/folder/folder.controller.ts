@@ -19,7 +19,7 @@ export class FolderController {
     @Get()
     async index(@Query() query: GetFoldersDto, @CurrentUser() user: User): Promise<Folder[]> {
         return this.folderService.findMany({
-            parentId: query.parentId,
+            parentId: query.parentId ?? null,
             OR: [
                 {
                     access: {
@@ -33,6 +33,24 @@ export class FolderController {
                 }
             ]
         }, {access: true});
+    }
+
+    @Get('all')
+    async findAll(@CurrentUser() user: User): Promise<Folder[]> {
+        return this.folderService.findMany({
+            OR: [
+                {
+                    userId: user.id,
+                },
+                {
+                    access: {
+                        some: {
+                            userEmail: user.email
+                        }
+                    }
+                }
+            ]
+        })
     }
 
     @Get(':id')

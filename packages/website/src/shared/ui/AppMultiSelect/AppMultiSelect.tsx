@@ -1,10 +1,10 @@
 import {Box, Chip, MenuItem, OutlinedInput, Select} from "@mui/material";
-import {ControllerRenderProps, FieldValues} from "react-hook-form";
+import {ControllerRenderProps} from "react-hook-form";
 import {SelectProps} from "@mui/material/Select/Select";
 
 interface AppMultiSelectProps extends SelectProps {
     options: any[];
-    field: ControllerRenderProps<FieldValues, any>;
+    field: ControllerRenderProps<any, any>;
     label: string;
     valueKey: string;
 }

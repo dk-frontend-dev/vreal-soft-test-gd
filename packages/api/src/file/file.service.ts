@@ -9,15 +9,12 @@ import {join} from "path";
 import {StoredFileData} from "@/@models/file.model";
 import {CreateFileDto} from "@/file/dtos/create-file.dto";
 import {UpdateFileDto} from "@/file/dtos/update-file.dto";
-import {FolderService} from "@/folder/folder.service";
-import {isUUID} from "class-validator";
-import {isGrantedLib} from "@/@helpers/is-granted.helper";
 
 @Injectable()
 export class FileService {
     private readonly uploadDir = join(__dirname, '..', 'public');
 
-    constructor(private prisma: PrismaService, private folderService: FolderService) {
+    constructor(private prisma: PrismaService) {
         if(!fs.existsSync(this.uploadDir)) {
             fs.mkdirSync(this.uploadDir);
         }

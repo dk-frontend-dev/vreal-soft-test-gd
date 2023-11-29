@@ -7,15 +7,17 @@ import {useState} from "react";
 import {httpClient} from "@/shared/api/httpClient.ts";
 import AppAuthor from "@/shared/ui/AppAuthor/AppAuthor.tsx";
 import {useStore} from "@/store/store.ts";
+import EditFile from "@/widgets/Files/EditFile/EditFile.tsx";
 
 interface FileProps {
     file: IFile;
-    onFileDeleted: () => void;
+    onFileUpdated: () => void;
 }
 
-function File({file, onFileDeleted}: FileProps) {
+function File({file, onFileUpdated}: FileProps) {
     const {allUsers, currentUser} = useStore();
     const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+    const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const filename = `${file.name}${file.extension}`;
 
@@ -23,17 +25,23 @@ function File({file, onFileDeleted}: FileProps) {
         setIsLoading(true);
         await httpClient.delete(`files/${file.id}`);
         setIsLoading(false);
-        onFileDeleted();
+        onFileUpdated();
     }
 
     const closeDeleteDialog = (response: boolean) => {
-        if (!response) {
-            setIsDeleteOpen(false);
-            return;
-        }
+        setIsDeleteOpen(false);
+
+        if (!response) return;
 
         void deleteFile();
-        setIsDeleteOpen(false);
+    }
+
+    const closeEditDialog = (response: boolean) => {
+        setIsEditOpen(false);
+
+        if (!response) return;
+
+        void onFileUpdated();
     }
 
     return (
@@ -47,7 +55,7 @@ function File({file, onFileDeleted}: FileProps) {
 
                 <div className={s.actions}>
                     <AppButton text={'Delete'} variant="outlined" color="error" onClick={() => setIsDeleteOpen(true)} />
-                    <AppButton text={'Update'} variant="outlined" color="primary" />
+                    <AppButton text={'Update'} variant="outlined" color="primary" onClick={() => setIsEditOpen(true)} />
                     <AppButton text={'View'} />
                 </div>
             </div>
@@ -59,6 +67,8 @@ function File({file, onFileDeleted}: FileProps) {
                 title={'Are you sure that you want to delete file?'}
                 text={'This file will be permanently deleted'}
             />
+
+            <EditFile isOpen={isEditOpen} closeDialog={closeEditDialog} file={file} />
         </>
     )
 }

@@ -26,6 +26,7 @@ export class FolderService {
                         id: user.id
                     }
                 },
+                folder: payload.parentId ? {connect: {id: payload.parentId}} : {},
                 access: {
                     createMany: {
                         data: concatPermissions(parentFolderAccess, payload.userEmails, user.email),

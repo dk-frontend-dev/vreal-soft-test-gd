@@ -1,0 +1,28 @@
+@import "@/styles/variables";
+@import "@/styles/mixins";
+
+.container {
+  padding: 10px 5px 5px;
+  border: 1px solid $border-color-1;
+  transition: .2s ease-in border-color;
+  border-radius: $main-border-radius;
+
+  &.active {
+    border-color: $border-color-2;
+  }
+}
+
+button.button {
+  margin: 0 auto;
+  display: block;
+}
+
+.text {
+  text-align: center;
+  margin: 4px 0;
+}
+
+.filename {
+  text-align: center;
+  @include text(14px, 700, 16px);
+}

@@ -25,6 +25,7 @@ export const globalTheme = createTheme({
                 root: {
                     minWidth: '320px',
                     maxWidth: '640px',
+                    width: '100%',
                     marginBottom: '15px'
                 }
             }
