@@ -12,8 +12,11 @@ import {getItem} from '@/shared/lib/localStorageLib.ts';
 import {ACCESS_TOKEN_KEY} from '@/shared/constants/commonConstants.ts';
 import {Routes as RoutePaths} from '@/shared/constants/routeConstants.ts';
 import {getAllUsersApi, getCurrentUserApi} from '@/shared/api/userAPI.ts';
+import {useAxiosInterceptor} from "@/shared/api/httpClient.ts";
 
 function App() {
+  useAxiosInterceptor();
+
   const navigate = useNavigate();
   const {setCurrentUser, currentUser, setAllUsers} = useStore();
 
