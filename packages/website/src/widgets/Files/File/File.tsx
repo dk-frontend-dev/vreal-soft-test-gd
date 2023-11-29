@@ -4,10 +4,10 @@ import ArticleIcon from '@mui/icons-material/Article';
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import AppDeleteDialog from "@/shared/ui/AppDeleteDialog/AppDeleteDialog.tsx";
 import {useState} from "react";
-import {httpClient} from "@/shared/api/httpClient.ts";
 import AppAuthor from "@/shared/ui/AppAuthor/AppAuthor.tsx";
 import {useStore} from "@/store/store.ts";
 import EditFile from "@/widgets/Files/EditFile/EditFile.tsx";
+import {deleteFileApi} from "@/shared/api/fileAPI.ts";
 
 interface FileProps {
     file: IFile;
@@ -23,7 +23,7 @@ function File({file, onFileUpdated}: FileProps) {
 
     const deleteFile = async () => {
         setIsLoading(true);
-        await httpClient.delete(`files/${file.id}`);
+        await deleteFileApi(file.id);
         setIsLoading(false);
         onFileUpdated();
     }

@@ -1,11 +1,9 @@
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
+import {BaseDialogProps} from "@/shared/models/dialog.model.ts";
 
-interface AppDeleteDialogProps {
-    isOpen: boolean;
-    onClose?: () => void;
+interface AppDeleteDialogProps extends BaseDialogProps {
     isLoading: boolean;
-    closeDialog: (response: boolean) => void;
     title: string;
     text: string;
 }

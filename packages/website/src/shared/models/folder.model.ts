@@ -9,3 +9,8 @@ export interface UpdateFolderPayload {
     userEmails: string[];
     parentId: string | null;
 }
+
+export interface CreateFolderPayload {
+    name: string;
+    userEmails: string[];
+}

@@ -13,17 +13,14 @@ import {useState} from "react";
 import {AccessType} from '@prisma/client';
 import AppSelect from "@/shared/ui/AppSelect/AppSelect.tsx";
 import {useStore} from "@/store/store.ts";
-import {httpClient} from "@/shared/api/httpClient.ts";
 import AppFileInput from "@/shared/ui/AppFileInput/AppFileInput.tsx";
 import {validateFileSize} from "@/shared/validators/fileValidators.ts";
 import {ONE_MB, FILE_TYPES} from "@/shared/constants/fileConstants.ts";
 import {CreateFilePayload} from "@/shared/models/file.model.ts";
+import {BaseDialogProps} from "@/shared/models/dialog.model.ts";
+import {createFileApi} from "@/shared/api/fileAPI.ts";
 
-interface CreateFileProps {
-    isOpen: boolean;
-    onClose?: () => void;
-    closeDialog: (response: boolean) => void;
-}
+interface CreateFileProps extends BaseDialogProps {}
 
 function CreateFile({isOpen, onClose, closeDialog}: CreateFileProps) {
     const {currentFolder} = useStore();
@@ -34,12 +31,7 @@ function CreateFile({isOpen, onClose, closeDialog}: CreateFileProps) {
     const createFile = async (payload: CreateFilePayload) => {
         setIsLoading(true);
 
-        const formData = new FormData();
-        formData.append('name', payload.name);
-        formData.append('type', payload.type);
-        formData.append('file', payload.file[0]);
-
-        await httpClient.post('files', formData, {params: {folderId: currentFolder?.id}});
+        await createFileApi(payload, currentFolder?.id);
 
         setIsLoading(false);
         closeDialog(true);

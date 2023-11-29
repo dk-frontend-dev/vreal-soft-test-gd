@@ -11,14 +11,11 @@ import {File as IFile} from "@prisma/client";
 import {getFileNameLib} from "@/shared/lib/fileLib.ts";
 import {useStore} from "@/store/store.ts";
 import {useState} from "react";
-import {httpClient} from "@/shared/api/httpClient.ts";
-import {rootFolderIdLib} from "@/shared/lib/rootFolderIdLib.ts";
 import {ROOT_FOLDER_ID} from "@/shared/constants/commonConstants.ts";
+import {BaseDialogProps} from "@/shared/models/dialog.model.ts";
+import {updateFileApi} from "@/shared/api/fileAPI.ts";
 
-interface EditFileProps {
-    isOpen: boolean;
-    onClose?: () => void;
-    closeDialog: (response: boolean) => void;
+interface EditFileProps extends BaseDialogProps {
     file: IFile;
 }
 
@@ -32,15 +29,7 @@ function EditFile({isOpen, onClose, closeDialog, file}: EditFileProps) {
     const editFile = async (payload: EditFilePayload) => {
         setIsLoading(true);
 
-        const formData = new FormData();
-        formData.append('name', payload.name);
-        formData.append('type', payload.type);
-
-        if (payload.file) {
-            formData.append('file', payload.file[0])
-        }
-
-        await httpClient.put(`files/${file.id}`, formData, {params: {folderId: rootFolderIdLib(payload.folderId)}})
+        await updateFileApi(file.id, payload);
 
         setIsLoading(false);
         reset();

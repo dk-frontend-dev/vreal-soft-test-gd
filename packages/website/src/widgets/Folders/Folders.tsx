@@ -1,12 +1,12 @@
 import {Typography} from "@mui/material";
 import s from './Folders.module.scss';
 import {useEffect, useState} from "react";
-import {httpClient} from "@/shared/api/httpClient.ts";
 import {useStore} from "@/store/store.ts";
 import Folder from "@/widgets/Folders/Folder/Folder.tsx";
 import {useSearchParams} from "react-router-dom";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import CreateFolder from "@/widgets/Folders/CreateFolder/CreateFolder.tsx";
+import {getAllFoldersApi, getFoldersApi} from "@/shared/api/folderAPI.ts";
 
 function Folders() {
     const [isCreateFolderOpen, setIsCreateFolderOpen] = useState<boolean>(false);
@@ -18,15 +18,10 @@ function Folders() {
     }
 
     const getFolders = async () => {
-        const requests$ = [
-            httpClient.get('folders/all'),
-            httpClient.get(
-                'folders',
-                {params: {parentId: searchParams.get('folderId')}}
-            )
-        ]
-
-        const [{data: allFolders}, {data: folders}] = await Promise.all(requests$);
+        const [{data: allFolders}, {data: folders}] = await Promise.all([
+            getAllFoldersApi(),
+            getFoldersApi(searchParams.get('folderId')),
+        ]);
 
         setAllFolders(allFolders);
         setFolders(folders);

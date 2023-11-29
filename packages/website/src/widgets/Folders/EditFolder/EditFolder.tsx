@@ -9,13 +9,10 @@ import {FolderWithGrantedUsers, UpdateFolderPayload} from "@/shared/models/folde
 import {ROOT_FOLDER_ID} from "@/shared/constants/commonConstants.ts";
 import AppSelect from "@/shared/ui/AppSelect/AppSelect.tsx";
 import {useMemo, useState} from "react";
-import {httpClient} from "@/shared/api/httpClient.ts";
-import {rootFolderIdLib} from "@/shared/lib/rootFolderIdLib.ts";
+import {BaseDialogProps} from "@/shared/models/dialog.model.ts";
+import {updateFolderApi} from "@/shared/api/folderAPI.ts";
 
-interface EditFolderProps {
-    isOpen: boolean;
-    onClose?: () => void;
-    closeDialog: (response: boolean) => void;
+interface EditFolderProps extends BaseDialogProps {
     selectedFolder: FolderWithGrantedUsers;
 }
 
@@ -31,8 +28,7 @@ function EditFolder({isOpen, onClose, closeDialog, selectedFolder}: EditFolderPr
     const updateFolder = async (payload: UpdateFolderPayload) => {
         setIsLoading(true);
 
-        const data = {...payload, parentId: rootFolderIdLib(payload.parentId)}
-        await httpClient.put(`folders/${selectedFolder.id}`, data)
+        await updateFolderApi(selectedFolder.id, payload);
 
         closeDialog(true);
         setIsLoading(false);

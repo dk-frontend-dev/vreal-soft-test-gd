@@ -2,12 +2,12 @@ import FolderIcon from '@mui/icons-material/Folder';
 import s from './Folder.module.scss';
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import {useState} from "react";
-import {httpClient} from "@/shared/api/httpClient.ts";
 import AppDeleteDialog from "@/shared/ui/AppDeleteDialog/AppDeleteDialog.tsx";
 import EditFolder from "@/widgets/Folders/EditFolder/EditFolder.tsx";
 import {FolderWithGrantedUsers} from "@/shared/models/folder.model.ts";
 import {useStore} from "@/store/store.ts";
 import AppAuthor from "@/shared/ui/AppAuthor/AppAuthor.tsx";
+import {deleteFolderApi} from "@/shared/api/folderAPI.ts";
 
 interface FolderProps {
     folder: FolderWithGrantedUsers;
@@ -23,7 +23,7 @@ function Folder({folder, onClick, onFolderUpdated}: FolderProps) {
 
     const deleteFolder = async (folderId: string) => {
         setIsLoading(true);
-        await httpClient.delete(`folders/${folderId}`);
+        await deleteFolderApi(folderId);
         setIsLoading(false);
         onFolderUpdated();
     }

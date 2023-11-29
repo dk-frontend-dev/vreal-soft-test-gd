@@ -6,33 +6,27 @@ import {
     TextField
 } from "@mui/material";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
-import {Controller, FieldValues, useForm} from "react-hook-form";
+import {Controller, useForm} from "react-hook-form";
 import AppMultiSelect from "@/shared/ui/AppMultiSelect/AppMultiSelect.tsx";
 import {useStore} from "@/store/store.ts";
 import {validationErrors} from "@/shared/constants/validationErrors.ts";
-import {httpClient} from "@/shared/api/httpClient.ts";
 import {useState} from "react";
 import {filterGrantedUsersLib} from "@/shared/lib/filterGrantedUsersLib.ts";
+import {BaseDialogProps} from "@/shared/models/dialog.model.ts";
+import {CreateFolderPayload} from "@/shared/models/folder.model.ts";
+import {createFolderApi} from "@/shared/api/folderAPI.ts";
 
-interface CreateFolderProps {
-    isOpen: boolean;
-    onClose?: () => void;
-    closeDialog: (response: boolean) => void;
-}
+interface CreateFolderProps extends BaseDialogProps {}
 
 function CreateFolder({isOpen, closeDialog, onClose}: CreateFolderProps) {
     const [isLoading, setIsLoading] = useState<boolean>();
     const {allUsers, currentFolder, currentUser} = useStore();
-    const {control, handleSubmit, reset} = useForm();
+    const {control, handleSubmit, reset} = useForm<CreateFolderPayload>();
 
-    const createFolder = async (payload: FieldValues) => {
+    const createFolder = async (payload: CreateFolderPayload) => {
         setIsLoading(true);
 
-        await httpClient.post('folders', {
-            name: payload.name,
-            parentId: currentFolder?.id,
-            userEmails: payload.userEmails
-        })
+        await createFolderApi(payload, currentFolder?.id)
 
         reset();
         setIsLoading(false);
@@ -57,16 +51,14 @@ function CreateFolder({isOpen, closeDialog, onClose}: CreateFolderProps) {
                         defaultValue=''
                         rules={{required: validationErrors.required, max: {value: 100, message: validationErrors.maxLength}}}
                         render={({field, fieldState: {error}}) => (
-                            <>
-                                <TextField
-                                    {...field}
-                                    type='text'
-                                    fullWidth
-                                    label={'Folder name'}
-                                    error={error !== undefined}
-                                    helperText={error ? error.message : ''}
-                                />
-                            </>
+                            <TextField
+                                {...field}
+                                type='text'
+                                fullWidth
+                                label={'Folder name'}
+                                error={error !== undefined}
+                                helperText={error ? error.message : ''}
+                            />
                         )}
                     ></Controller>
 

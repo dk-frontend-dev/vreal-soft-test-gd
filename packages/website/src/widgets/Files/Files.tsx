@@ -2,13 +2,11 @@ import s from './Files.module.scss';
 import {Typography} from "@mui/material";
 import {useStore} from "@/store/store.ts";
 import {useEffect, useState} from "react";
-import {httpClient} from "@/shared/api/httpClient.ts";
-import {AxiosResponse} from "axios";
-import {File as IFile} from '@prisma/client';
 import File from "@/widgets/Files/File/File.tsx";
 import {useSearchParams} from "react-router-dom";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import CreateFile from "@/widgets/Files/CreateFile/CreateFile.tsx";
+import {getFilesApi} from "@/shared/api/fileAPI.ts";
 
 function Files() {
     const [isCreateFileOpen, setIsCreateFileOpen] = useState<boolean>(false);
@@ -16,7 +14,7 @@ function Files() {
     const {files, setFiles} = useStore();
 
     const getFiles = async () => {
-        const {data}: AxiosResponse<IFile[]> = await httpClient.get('files', {params: {folderId: searchParams.get('folderId')}});
+        const {data} = await getFilesApi(searchParams.get('folderId'))
         setFiles(data);
     }
 
