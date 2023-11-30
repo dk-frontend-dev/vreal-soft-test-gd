@@ -27,7 +27,7 @@ function AppSearchField({onValueChange}: AppSearchFieldProps) {
 
     return (
         <div className={s.container}>
-            <TextField aria-autocomplete={'none'} placeholder={'Search by name..'} onChange={onChange} value={value} />
+            <TextField autoComplete='off' type='text' aria-autocomplete={'none'} placeholder={'Search by name..'} onChange={onChange} value={value} />
             <AppButton text={'Reset'} size={'large'} onClick={clearField} />
         </div>
     )
