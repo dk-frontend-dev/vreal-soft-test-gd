@@ -27,11 +27,20 @@ import {FileQueryDto} from '@/file/dtos/file-query.dto';
 import {ParentFolderFileAccessGuard} from '@/@guards/parent-folder-file-access.guard';
 import {FileParamsDto} from '@/file/dtos/file-params.dto';
 import {join} from "path";
+import {ApiConsumes, ApiCreatedResponse, ApiOperation, ApiQuery, ApiTags} from "@nestjs/swagger";
+import {FileResponseDto} from "@/file/dtos/file-response.dto";
 
+@ApiTags('Files')
 @Controller('files')
 export class FileController {
   constructor(private fileService: FileService) {}
 
+  @ApiOperation({ summary: 'get all files that you have access to' })
+  @ApiQuery({ name: 'folderId', type: GetFilesDto })
+  @ApiCreatedResponse({
+    type: [FileResponseDto],
+    description: 'files response',
+  })
   @UseGuards(JwtAuthGuard)
   @Get()
   async index(@CurrentUser() user: User, @Query() query: GetFilesDto): Promise<File[]> {
@@ -60,6 +69,12 @@ export class FileController {
     });
   }
 
+  @ApiOperation({ summary: 'get all files that you have access to by name' })
+  @ApiQuery({ name: 'name', type: 'string' })
+  @ApiCreatedResponse({
+    type: [FileResponseDto],
+    description: 'files response',
+  })
   @UseGuards(JwtAuthGuard)
   @Get('all')
   async findMany(@CurrentUser() user: User, @Query() query) {
@@ -90,17 +105,25 @@ export class FileController {
     })
   }
 
+  @ApiOperation({ summary: 'get stored file resource' })
   @Get('file/:filename')
   async sendFile(@Param('filename') filename: string, @Res() res) {
     return res.sendFile(join(filesDir, `${filename}`))
   }
 
+  @ApiOperation({ summary: 'delete file' })
   @UseGuards(JwtAuthGuard, CurrentFileAccessGuard)
   @Delete(':id')
   async delete(@Param() params: FileParamsDto): Promise<void> {
     return this.fileService.delete(params.id);
   }
 
+  @ApiOperation({ summary: 'create file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({
+    type: [FileResponseDto],
+    description: 'files response',
+  })
   @UseGuards(JwtAuthGuard, ParentFolderFileAccessGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -120,6 +143,12 @@ export class FileController {
     return this.fileService.create(user, payload, query.folderId, file);
   }
 
+  @ApiOperation({ summary: 'update file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiCreatedResponse({
+    type: [FileResponseDto],
+    description: 'files response',
+  })
   @UseGuards(JwtAuthGuard, ParentFolderFileAccessGuard, CurrentFileAccessGuard)
   @Put(':id')
   @UseInterceptors(FileInterceptor('file'))
