@@ -5,6 +5,9 @@ export const validateFileSize = (maxFileSize: number, isRequired = true): any =>
     if (!isRequired && !fileList) return true;
 
     const file = fileList[0];
+
+    if (!file) return true;
+
     return file.size <= maxFileSize || validationErrors.maxFileSize;
   };
 };

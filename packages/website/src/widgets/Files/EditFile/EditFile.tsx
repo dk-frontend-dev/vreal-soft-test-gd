@@ -22,7 +22,7 @@ interface EditFileProps extends BaseDialogProps {
 function EditFile({isOpen, onClose, closeDialog, file}: EditFileProps) {
   const [isLoading, setIsLoading] = useState<boolean>();
   const {allFolders} = useStore();
-  const {control, handleSubmit, setValue, reset} = useForm<EditFilePayload>();
+  const {control, handleSubmit, setValue} = useForm<EditFilePayload>();
 
   const maxFileSize = ONE_MB * 4;
 
@@ -32,7 +32,6 @@ function EditFile({isOpen, onClose, closeDialog, file}: EditFileProps) {
     await updateFileApi(file.id, payload);
 
     setIsLoading(false);
-    reset();
     closeDialog(true);
   };
 
@@ -99,7 +98,7 @@ function EditFile({isOpen, onClose, closeDialog, file}: EditFileProps) {
                 fieldState={fieldState}
                 onChange={onChange}
                 onBlur={onBlur}
-                filename={value?.[0].name ?? getFileNameLib(file.name, file.extension)}
+                filename={value?.[0]?.name ?? getFileNameLib(file.name, file.extension)}
                 onDrop={acceptedFiles => {
                   setValue('file', acceptedFiles, {
                     shouldValidate: true
