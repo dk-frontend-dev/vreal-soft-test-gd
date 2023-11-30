@@ -4,8 +4,8 @@
 or
 ```npm run start-app```
 
-frontend: http://localhost:5173\
-backend: http://localhost:3000\
+frontend: http://localhost:5173 \
+backend: http://localhost:3000 \
 docs: http://localhost:3000/api-docs
 
 ## Improvements
