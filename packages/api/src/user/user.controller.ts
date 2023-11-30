@@ -62,6 +62,6 @@ export class UserController {
   async googleAuthRedirect(@Req() req, @Res() res): Promise<void> {
     const user = await this.userService.signIn(req.user);
 
-    res.redirect(`http://localhost:5173/google-oauth-success-redirect/${user.accessToken}`);
+    res.redirect(`${process.env.CLIENT_URL}/google-oauth-success-redirect/${user.accessToken}`);
   }
 }
