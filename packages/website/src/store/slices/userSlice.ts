@@ -1,24 +1,24 @@
 import {StateCreator} from 'zustand';
-import {User} from '@prisma/client';
+import {UserModel} from "@/shared/models/user.model.ts";
 
 export interface UserSlice {
-  currentUser: User | null;
-  setCurrentUser: (currentUser: User | null) => void;
-  allUsers: User[] | [];
-  setAllUsers: (users: User[]) => void;
+  currentUser: UserModel | null;
+  setCurrentUser: (currentUser: UserModel | null) => void;
+  allUsers: UserModel[] | [];
+  setAllUsers: (users: UserModel[]) => void;
 }
 
 export const createUserSlice: StateCreator<UserSlice, [], [], UserSlice> = set => ({
   currentUser: null,
   allUsers: [],
-  setCurrentUser: (currentUser: User | null) =>
+  setCurrentUser: (currentUser: UserModel | null) =>
     set((state: UserSlice) => {
       return {
         ...state,
         currentUser
       };
     }),
-  setAllUsers: (allUsers: User[]) =>
+  setAllUsers: (allUsers: UserModel[]) =>
     set((state: UserSlice) => {
       return {
         ...state,

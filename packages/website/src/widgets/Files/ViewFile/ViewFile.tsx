@@ -1,14 +1,14 @@
 import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import AppButton from "@/shared/ui/AppButton/AppButton.tsx";
 import {BaseDialogProps} from "@/shared/models/dialog.model.ts";
-import {File} from '@prisma/client';
 import {getFilePathLib} from "@/shared/lib/fileLib.ts";
 import s from './ViewFile.module.scss';
 import {VIDEO_FORMATS} from "@/shared/constants/fileConstants.ts";
+import {FileModel} from "@/shared/models/file.model.ts";
 
 
 interface AppViewFileDialogProps extends BaseDialogProps {
-    file: File;
+    file: FileModel;
 }
 
 function ViewFile({isOpen, onClose, closeDialog, file}: AppViewFileDialogProps) {

@@ -1,6 +1,19 @@
-import {Folder, FolderAccess} from '@prisma/client';
+export interface FolderModel {
+  id: string
+  name: string
+  parentId: string | null
+  userId: string
+  createdAt: Date
+  updatedAt: Date
+}
 
-export interface FolderWithGrantedUsers extends Folder {
+export interface FolderAccess {
+  id: string
+  folderId: string
+  userEmail: string
+}
+
+export interface FolderWithGrantedUsers extends FolderModel {
   access: FolderAccess[];
 }
 

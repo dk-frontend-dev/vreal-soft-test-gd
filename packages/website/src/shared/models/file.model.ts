@@ -1,4 +1,19 @@
-import {AccessType} from '@prisma/client';
+export enum AccessType {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE'
+}
+
+export interface FileModel {
+  id: string
+  name: string
+  extension: string
+  storedFileName: string
+  type: AccessType
+  folderId: string | null
+  userId: string
+  createdAt: Date
+  updatedAt: Date
+}
 
 export interface EditFilePayload {
   name: string;

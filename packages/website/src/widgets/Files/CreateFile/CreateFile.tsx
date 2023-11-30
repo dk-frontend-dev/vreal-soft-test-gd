@@ -3,13 +3,12 @@ import {Controller, useForm} from 'react-hook-form';
 import {validationErrors} from '@/shared/constants/validationErrors.ts';
 import AppButton from '@/shared/ui/AppButton/AppButton.tsx';
 import {useState} from 'react';
-import {AccessType} from '@prisma/client';
 import AppSelect from '@/shared/ui/AppSelect/AppSelect.tsx';
 import {useStore} from '@/store/store.ts';
 import AppFileInput from '@/shared/ui/AppFileInput/AppFileInput.tsx';
 import {validateFileSize} from '@/shared/validators/fileValidators.ts';
 import {ONE_MB, FILE_TYPES} from '@/shared/constants/fileConstants.ts';
-import {CreateFilePayload} from '@/shared/models/file.model.ts';
+import {CreateFilePayload, AccessType} from '@/shared/models/file.model.ts';
 import {BaseDialogProps} from '@/shared/models/dialog.model.ts';
 import {createFileApi} from '@/shared/api/fileAPI.ts';
 

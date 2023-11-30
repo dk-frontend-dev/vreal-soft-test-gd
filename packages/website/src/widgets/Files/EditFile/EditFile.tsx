@@ -6,8 +6,7 @@ import {FILE_TYPES, ONE_MB} from '@/shared/constants/fileConstants.ts';
 import {validateFileSize} from '@/shared/validators/fileValidators.ts';
 import AppFileInput from '@/shared/ui/AppFileInput/AppFileInput.tsx';
 import AppButton from '@/shared/ui/AppButton/AppButton.tsx';
-import {EditFilePayload} from '@/shared/models/file.model.ts';
-import {File as IFile} from '@prisma/client';
+import {EditFilePayload, FileModel} from '@/shared/models/file.model.ts';
 import {getFileNameLib} from '@/shared/lib/fileLib.ts';
 import {useStore} from '@/store/store.ts';
 import {useState} from 'react';
@@ -16,7 +15,7 @@ import {BaseDialogProps} from '@/shared/models/dialog.model.ts';
 import {updateFileApi} from '@/shared/api/fileAPI.ts';
 
 interface EditFileProps extends BaseDialogProps {
-  file: IFile;
+  file: FileModel;
 }
 
 function EditFile({isOpen, onClose, closeDialog, file}: EditFileProps) {

@@ -1,7 +1,7 @@
-import {User} from '@prisma/client';
+import {UserModel} from "@/shared/models/user.model.ts";
 
 interface AppAuthorProps {
-  allUsers: User[] | null;
+  allUsers: UserModel[] | null;
   userId: string;
   currentUserEmail?: string;
 }

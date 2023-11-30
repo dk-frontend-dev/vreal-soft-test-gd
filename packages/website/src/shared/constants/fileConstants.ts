@@ -1,4 +1,4 @@
-import {AccessType} from '@prisma/client';
+import {AccessType} from "@/shared/models/file.model.ts";
 
 export const enum FileMimeTypes {
   SVG = 'image/svg+xml',

@@ -1,4 +1,3 @@
-import {File as IFile} from '@prisma/client';
 import s from './File.module.scss';
 import ArticleIcon from '@mui/icons-material/Article';
 import AppButton from '@/shared/ui/AppButton/AppButton.tsx';
@@ -9,9 +8,10 @@ import {useStore} from '@/store/store.ts';
 import EditFile from '@/widgets/Files/EditFile/EditFile.tsx';
 import {deleteFileApi} from '@/shared/api/fileAPI.ts';
 import ViewFile from "@/widgets/Files/ViewFile/ViewFile.tsx";
+import {FileModel} from "@/shared/models/file.model.ts";
 
 interface FileProps {
-  file: IFile;
+  file: FileModel;
   onFileUpdated: () => void;
 }
 

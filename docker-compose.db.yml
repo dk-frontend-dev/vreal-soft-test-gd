@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  database:
+    image: postgres:12.2
+    volumes:
+      - ./dbs:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=vreal-soft-test
+      - POSTGRES_DB=vreal-soft-test
+      - POSTGRES_PASSWORD=12345678
+    ports:
+      - "5435:5432"

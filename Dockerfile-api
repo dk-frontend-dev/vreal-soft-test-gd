@@ -1,0 +1,30 @@
+FROM node:18.10.0 as build
+
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json yarn.lock ./
+COPY ./packages/api/package.json ./packages/api/
+RUN yarn --frozen-lockfile
+
+# Copy source code
+COPY ./packages/api ./packages/api/
+COPY ./packages/prisma ./packages/prisma/
+
+# Build project
+RUN cd /app/packages/api && yarn prisma generate
+RUN cd /app/packages/api && yarn build
+
+FROM node:18.10 as builder
+
+WORKDIR /app
+
+COPY --from=build /app ./
+
+ADD docker-entrypoint-api.sh ./
+ENTRYPOINT ["sh", "docker-entrypoint-api.sh"]
+
+
+
+EXPOSE 3000

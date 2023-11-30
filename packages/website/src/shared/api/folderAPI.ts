@@ -1,7 +1,11 @@
 import {httpClient} from '@/shared/api/httpClient.ts';
 import {AxiosResponse} from 'axios';
-import {Folder} from '@prisma/client';
-import {CreateFolderPayload, FolderWithGrantedUsers, UpdateFolderPayload} from '@/shared/models/folder.model.ts';
+import {
+  CreateFolderPayload,
+  FolderModel,
+  FolderWithGrantedUsers,
+  UpdateFolderPayload
+} from '@/shared/models/folder.model.ts';
 import {rootFolderIdLib} from '@/shared/lib/rootFolderIdLib.ts';
 
 export const getAllFoldersApi = (search: string = ''): Promise<AxiosResponse<FolderWithGrantedUsers[]>> => {
@@ -20,7 +24,7 @@ export const updateFolderApi = (folderId: string, payload: UpdateFolderPayload) 
   return httpClient.put(`folders/${folderId}`, {...payload, parentId: rootFolderIdLib(payload.parentId)});
 };
 
-export const createFolderApi = (payload: CreateFolderPayload, parentId?: string): Promise<AxiosResponse<Folder>> => {
+export const createFolderApi = (payload: CreateFolderPayload, parentId?: string): Promise<AxiosResponse<FolderModel>> => {
   return httpClient.post('folders', {
     ...payload,
     parentId

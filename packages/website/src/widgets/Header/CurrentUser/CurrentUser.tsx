@@ -1,10 +1,10 @@
-import {User} from '@prisma/client';
 import s from './CurrentUser.module.scss';
 import clsx from 'clsx';
 import AppButton from '@/shared/ui/AppButton/AppButton.tsx';
+import {UserModel} from "@/shared/models/user.model.ts";
 
 interface CurrentUserProps {
-  user: User;
+  user: UserModel;
   onLogout: () => void;
 }
 
