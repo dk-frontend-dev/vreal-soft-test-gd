@@ -26,6 +26,6 @@ docs: http://localhost:3000/api-docs
 - Make explicit the division into smart and dumb components
 - Make a global error handler
 - Fix @prisma/client types when building application (vite throws an error)
-- Install stylelint | prettier-import-order
+- Install stylelint | prettier-import-order | git-commit-msg linter
 - Make shared dialog component
 
